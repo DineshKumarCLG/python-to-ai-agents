@@ -22,7 +22,10 @@ Your personal, permanent engineering and study handbook. Everything we learn, co
    - [Instance Attributes vs Local Variables](#instance-attributes-vs-local-variables)
    - [Methods (Behaviors)](#methods-behaviors)
    - [Single Responsibility Principle (SRP)](#single-responsibility-principle-srp)
-4. [Debugging & Error Diagnosis](#4-debugging--error-diagnosis)
+4. [The Four Pillars of OOP](#4-the-four-pillars-of-oop-🏛️)
+5. [Debugging & Error Diagnosis](#5-debugging--error-diagnosis)
+6. [Tabular Data & Backend Patterns](#6-tabular-data--backend-patterns-📊)
+7. [Git & Version Control](#7-git--version-control-🛠️)
 
 ---
 
@@ -319,10 +322,14 @@ flowchart TD
 ---
 
 ## 5. Debugging & Error Diagnosis
-* **`TypeError`**: Wrong type or incorrect number of arguments passed to a function/operator (e.g. comparing `'str' > 'float'`).
-* **`ValueError`**: Correct type, but invalid value (e.g. negative marks, negative expense amount).
-* **`AttributeError`**: Trying to access a variable or method that does not exist on that object (e.g. calling `.lower()` on a `list`).
-* **`KeyError`**: Trying to access a dictionary key that doesn't exist (e.g. `dict[1]` instead of `dict["amount"]`).
+* **`TypeError`**: Wrong datatype or invalid operation for that type:
+  * *Example A*: Comparing `'str' > 'float'`.
+  * *Example B (String indexing)*: `"category"["amount"]` ➔ `TypeError: string indices must be integers, not 'str'` (happens when looping over a dictionary and treating its key string as a dictionary).
+  * *Example C (Unhashable type)*: `amount[amount]` where `amount` is a dictionary ➔ `TypeError: unhashable type: 'dict'` (dictionaries are mutable and cannot be used as dictionary keys).
+* **`ValueError`**: Correct datatype, but invalid domain value (e.g. negative marks, negative expense amount).
+* **`AttributeError`**: Trying to call a method that doesn't exist on that type (e.g. calling `dict.append()` instead of `list.append()`, or calling `.lower()` on a `list`).
+* **`KeyError`**: Trying to access a dictionary key that doesn't exist:
+  * *Literal string key vs Variable*: `expense["category"]` accesses key `"category"`. But `expense[category]` evaluates variable `category` (which might be `"food"`) and crashes with `KeyError: 'food'`.
 * **`IndexError`**: Trying to access a list index that is out of range (e.g. `list[1]` when list has only 1 item).
 
 ---
@@ -379,3 +386,40 @@ filtered = [
     if item["category"].lower() == category.lower()
 ]
 ```
+
+---
+
+## 7. Git & Version Control 🛠️
+
+### The 3 Stages of Git
+```mermaid
+flowchart LR
+    A["Working Directory\n(Your active edits)"] -- "git add <file>" --> B["Staging Area\n(The packed box)"]
+    B -- "git commit -m '...'" --> C["Local Repository\n(Permanent snapshot)"]
+    C -- "git push origin master" --> D["GitHub Cloud\n(Remote backup)"]
+```
+
+### Essential Commands Cheat Sheet
+| Command | Purpose |
+| :--- | :--- |
+| `git init` | Initializes a brand-new local Git repository (`.git` folder). |
+| `git status` | Shows state of working directory (untracked, modified, staged files). |
+| `git diff` | Shows exact line-by-line additions and deletions before staging. |
+| `git add <file>` / `git add .` | Moves file(s) into the Staging Area preparing for snapshot. |
+| `git restore --staged <file>` | Unstages a file from the staging area without losing edits. |
+| `git restore <file>` | Discards local changes in working directory, reverting to last commit. |
+| `git commit -m "message"` | Saves a permanent snapshot with author, timestamp, and message. |
+| `git log --oneline` | Displays past commit history with 7-character hash fingerprints. |
+| `git remote add origin <url>` | Links local repository to a remote GitHub repository. |
+| `git push -u origin master` | Uploads local commits to GitHub. |
+
+### The `.gitignore` File
+* Tells Git which files and folders to **never track or commit**.
+* **Essential ignores for Python & Backend**:
+  * `__pycache__/` & `*.pyc` (compiled bytecode)
+  * `.venv/` (virtual environments — can be gigabytes of packages)
+  * `.env` (private environment variables, secrets, database passwords, API keys)
+
+### Git vs GitHub
+* **Git**: The local command-line version control engine on your computer (100% offline).
+* **GitHub**: The cloud web platform where teams store, review, and collaborate on Git repositories.
