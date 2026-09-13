@@ -26,6 +26,7 @@ Your personal, permanent engineering and study handbook. Everything we learn, co
 5. [Debugging & Error Diagnosis](#5-debugging--error-diagnosis)
 6. [Tabular Data & Backend Patterns](#6-tabular-data--backend-patterns-📊)
 7. [Git & Version Control](#7-git--version-control-🛠️)
+8. [Time & Space Complexity (Big-O)](#8-time--space-complexity-big-o-notation-⚡)
 
 ---
 
@@ -423,3 +424,52 @@ flowchart LR
 ### Git vs GitHub
 * **Git**: The local command-line version control engine on your computer (100% offline).
 * **GitHub**: The cloud web platform where teams store, review, and collaborate on Git repositories.
+
+---
+
+## 8. Time & Space Complexity (Big-O Notation) ⚡
+
+### Why Big-O?
+We do not measure an algorithm's efficiency in seconds because hardware speeds differ (laptop vs. cloud server). Instead, we measure **growth rate**:
+> How does the number of operations (Time) and memory allocated (Space) scale as the input size (N) grows?
+
+### The Big-O Growth Curves (ASCII Visualization)
+```text
+Operations / Time
+  ^
+  |                                        O(N^2) [Quadratic - Nested Loops]
+  |                                      /
+  |                                     / 
+  |                                    /    O(N) [Linear - Single Loop]
+  |                                   /   /
+  |                                  /  /
+  |                                 / /
+  |                                //
+  |                              //
+  |                             //
+  |---------------------------------------> O(1) [Constant - Instant Hash Lookup]
+  +----------------------------------------> Input Size (N)
+    10 items         10,000 items        10,000,000 items
+```
+
+### The Core Complexity Tiers
+| Complexity | Name | Operations for N = 10,000 | Code Example |
+| :--- | :--- | :--- | :--- |
+| **`O(1)`** | Constant | 1 instant step | Dictionary key lookup (`dict["key"]`), list index access (`list[0]`) |
+| **`O(N)`** | Linear | 10,000 steps | Single `for` loop over a list (e.g. `get_total()`, `get_highest()`) |
+| **`O(N^2)`** | Quadratic | 100,000,000 steps! | Nested loop comparing every item to every other item |
+
+### Space Complexity (Memory Consumption)
+* **`O(1)` Extra Space**: Uses fixed memory regardless of input size (e.g., `total = 0.0` or a single pointer variable).
+* **`O(N)` Extra Space**: Creates a new data structure in memory that holds up to N items (e.g., `seen = set()`, list comprehension `[x for x in list]`).
+
+### The Fundamental Trade-off: Time vs. Space
+```text
+========================================================================
+Approach                  Time Complexity       Space Complexity (RAM)
+========================================================================
+Nested Loops              O(N^2)  [SLOW]        O(1)  [Zero extra RAM]
+Hash Set Lookups          O(N)    [FAST]        O(N)  [Uses a little RAM]
+========================================================================
+```
+In modern software engineering, backend APIs, and AI models, we often use `O(N)` space (like hash sets or dictionaries) to avoid `O(N^2)` slow loops.
