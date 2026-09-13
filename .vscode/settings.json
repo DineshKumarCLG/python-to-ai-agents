@@ -1,0 +1,10 @@
+{
+  "editor.inlineSuggest.enabled": false,
+  "github.copilot.enable": {
+    "*": false
+  },
+  "codeium.enableCodeium": false,
+  "codeium.enableSearch": false,
+  "antigravity.autocomplete": false,
+  "editor.suggest.preview": false
+}
