@@ -27,6 +27,7 @@ Your personal, permanent engineering and study handbook. Everything we learn, co
 6. [Tabular Data & Backend Patterns](#6-tabular-data--backend-patterns-📊)
 7. [Git & Version Control](#7-git--version-control-🛠️)
 8. [Time & Space Complexity (Big-O)](#8-time--space-complexity-big-o-notation-⚡)
+9. [FastAPI & REST APIs](#9-fastapi--rest-apis-🌐)
 
 ---
 
@@ -473,3 +474,51 @@ Hash Set Lookups          O(N)    [FAST]        O(N)  [Uses a little RAM]
 ========================================================================
 ```
 In modern software engineering, backend APIs, and AI models, we often use `O(N)` space (like hash sets or dictionaries) to avoid `O(N^2)` slow loops.
+
+---
+
+## 9. FastAPI & REST APIs 🌐
+
+### The Client-Server Conversation Loop
+```text
++-------------------+                          +--------------------+
+|      CLIENT       |                          |       SERVER       |
+|  (Browser, Phone, |  === 1. HTTP Request ==>  | (FastAPI + Uvicorn |
+|   or Postman)     |  <== 2. HTTP Response == |  listening on port)|
++-------------------+                          +--------------------+
+```
+
+### The Two Players: Framework vs. Server
+* **FastAPI**: The Python application code that defines endpoints (`@app.get(...)`, `@app.post(...)`).
+* **Uvicorn**: The ASGI web server that listens on a network port (`8000`) and passes incoming HTTP traffic to FastAPI.
+* **Command Syntax**:
+  ```bash
+  uvicorn module_name:app_variable --reload
+  # Example: uvicorn expense_api:app --reload
+  ```
+  *(Note: Colon separates the Python filename from the FastAPI instance variable; do NOT include `.py`).*
+
+### REST API Design Principles
+1. **Nouns, Not Verbs in URLs**: HTTP methods already provide the action.
+   * `POST /expenses` ➔ Create a new expense.
+   * `GET /expenses` ➔ Fetch all expenses.
+   * `GET /expenses/highest` ➔ Fetch the highest expense.
+2. **Standard HTTP Status Codes**:
+   * **`200 OK`**: Successful retrieval.
+   * **`201 Created`**: New resource successfully created via POST.
+   * **`404 Not Found`**: Resource does not exist (raised via `HTTPException(status_code=404)`).
+   * **`422 Unprocessable Entity`**: Request data violated schema/types (handled automatically by Pydantic).
+   * **`500 Internal Server Error`**: Unhandled crash in server code.
+
+### Pydantic Data Validation (`BaseModel` & `Field`)
+* Validates datatypes before function execution:
+  ```python
+  from pydantic import BaseModel, Field
+
+  class Expense(BaseModel):
+      category: str
+      amount: float = Field(gt=0, description="Amount must be positive")
+      description: str = ""
+  ```
+* Rejects invalid types or values (e.g., negative numbers or strings where numbers are expected) with automatic `422` error responses.
+* Serializes to a Python dictionary using `.model_dump()`.

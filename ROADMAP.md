@@ -59,11 +59,11 @@ flowchart TD
 ## 📌 Stage 3: Build Your First API Powered App
 
 ### 🛠️ Project 3: Personal Expense Tracker — API Version
-- [ ] Setup Python with FastAPI app in VS Code / IDE
-- [ ] Implement `POST /expenses` (Add Expense API) & test with Postman / Swagger
-- [ ] Implement `GET /expenses` (Get All Expenses API) & test
-- [ ] Implement `GET /expenses/highest` (Get Highest Expense API) & test
-- [ ] Request validation with Pydantic & HTTP status code handling
+- [x] Setup Python with FastAPI app in VS Code / IDE
+- [x] Implement `POST /expenses` (Add Expense API) & test with Postman / Swagger
+- [x] Implement `GET /expenses` (Get All Expenses API) & test
+- [x] Implement `GET /expenses/highest` (Get Highest Expense API) & test
+- [x] Request validation with Pydantic & HTTP status code handling
 
 ---
 
