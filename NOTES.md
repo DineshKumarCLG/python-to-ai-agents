@@ -28,6 +28,7 @@ Your personal, permanent engineering and study handbook. Everything we learn, co
 7. [Git & Version Control](#7-git--version-control-🛠️)
 8. [Time & Space Complexity (Big-O)](#8-time--space-complexity-big-o-notation-⚡)
 9. [FastAPI & REST APIs](#9-fastapi--rest-apis-🌐)
+10. [Relational Databases & SQL Fundamentals](#10-relational-databases--sql-fundamentals-🗄️)
 
 ---
 
@@ -522,3 +523,55 @@ In modern software engineering, backend APIs, and AI models, we often use `O(N)`
   ```
 * Rejects invalid types or values (e.g., negative numbers or strings where numbers are expected) with automatic `422` error responses.
 * Serializes to a Python dictionary using `.model_dump()`.
+
+---
+
+## 10. Relational Databases & SQL Fundamentals 🗄️
+
+### The Relational Model: Tables, Rows, and Columns
+* **Table**: A structured entity (like a spreadsheet) that stores persistent records.
+* **Columns (Schema)**: Defined attributes with datatypes (`INTEGER`, `REAL`/`FLOAT`, `TEXT`).
+* **Rows (Records)**: Individual instances of data.
+* **Primary Key (`id`)**: A unique identifier for every row that prevents data conflicts.
+
+### CRUD to SQL Mapping
+| Operation | HTTP Verb | SQL Command | Example |
+| :--- | :--- | :--- | :--- |
+| **Create** | `POST` | `INSERT INTO` | `INSERT INTO expenses (category, amount) VALUES ('Food', 150.0);` |
+| **Read** | `GET` | `SELECT` | `SELECT * FROM expenses WHERE category = 'Food';` |
+| **Update** | `PUT` / `PATCH` | `UPDATE` | `UPDATE expenses SET amount = 160.0 WHERE id = 1;` |
+| **Delete** | `DELETE` | `DELETE` | `DELETE FROM expenses WHERE id = 1;` |
+
+### Core SQL Clauses
+* **`WHERE`**: Filters rows based on conditions (`WHERE category = 'Transport' AND amount > 50.0`).
+* **`ORDER BY`**: Sorts rows (`ORDER BY amount DESC` for highest first; `ASC` for lowest first).
+* **`LIMIT`**: Restricts the maximum number of returned rows (`LIMIT 1`).
+* **Aggregate Functions**:
+  * `SELECT SUM(amount) FROM expenses;` (Computes total directly in the database engine).
+  * `SELECT COUNT(*) FROM expenses;` (Counts rows).
+
+### Python's `sqlite3`: Architecture & Transactions
+```text
+[Python Code] <==== Connection (conn) ====> [Database File: expenses.db]
+                       |
+                  cursor (worker)
+                       |
+               1. cursor.execute("SQL ...")
+               2. rows = cursor.fetchall()
+```
+* **`conn = sqlite3.connect("database.db")`**: Opens connection to local database file.
+* **`cursor = conn.cursor()`**: The execution pointer/courier that executes SQL and fetches results.
+* **`conn.commit()`**: Flushes and writes pending transactions permanently to disk.
+* **`conn.close()`**: Closes the connection cleanly.
+
+### Parameterized Queries vs. SQL Injection 🛡️
+* **Vulnerable (Never do this!)**:
+  ```python
+  cursor.execute(f"INSERT INTO expenses VALUES ('{category}', {amount})")
+  ```
+  *Risk*: A user can input malicious SQL (`'; DROP TABLE expenses; --`) and destroy the database.
+* **Secure (Always do this!)**:
+  ```python
+  cursor.execute("INSERT INTO expenses (category, amount) VALUES (?, ?)", (category, amount))
+  ```
+  The database engine sanitizes inputs, treating all values strictly as data, never as executable code.
