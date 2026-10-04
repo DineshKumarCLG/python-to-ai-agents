@@ -29,6 +29,7 @@ Your personal, permanent engineering and study handbook. Everything we learn, co
 8. [Time & Space Complexity (Big-O)](#8-time--space-complexity-big-o-notation-⚡)
 9. [FastAPI & REST APIs](#9-fastapi--rest-apis-🌐)
 10. [Relational Databases & SQL Fundamentals](#10-relational-databases--sql-fundamentals-🗄️)
+11. [SQLAlchemy ORM & Database Architecture](#11-sqlalchemy-orm--database-architecture-🏗️)
 
 ---
 
@@ -575,3 +576,64 @@ In modern software engineering, backend APIs, and AI models, we often use `O(N)`
   cursor.execute("INSERT INTO expenses (category, amount) VALUES (?, ?)", (category, amount))
   ```
   The database engine sanitizes inputs, treating all values strictly as data, never as executable code.
+
+---
+
+## 11. SQLAlchemy ORM & Database Architecture 🏗️
+
+### Pydantic Schema vs. SQLAlchemy Model
+* **Pydantic Model (`BaseModel`)**: Validates data at the application gate (e.g. checking incoming JSON has valid types, positive amounts). Lives in RAM.
+* **SQLAlchemy Model (`Base`)**: Maps Python class attributes to SQL table columns and persists rows to disk.
+
+### The 3 Core Components of Database Setup (`database.py`)
+1. **Engine**: Manages the connection pool and database dialect:
+   ```python
+   engine = create_engine("sqlite:///./expenses.db", connect_args={"check_same_thread": False})
+   ```
+2. **`SessionLocal`**: Factory that generates fresh database sessions for incoming requests:
+   ```python
+   SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+   ```
+3. **`Base`**: Declarative base class that all ORM models inherit from (`declarative_base()`).
+
+### The Database Session Lifecycle (`get_db`)
+In FastAPI, each request receives an isolated database session that is guaranteed to close:
+```python
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()  # Guarantees the connection is returned to the pool, preventing memory leaks!
+```
+
+### Complete CRUD Lifecycle in SQLAlchemy
+```python
+# 1. CREATE
+db_item = models.Expense(category="Food", amount=150.0)
+db.add(db_item)
+db.commit()
+db.refresh(db_item)  # Loads auto-generated ID back into the Python object
+
+# 2. READ
+all_items = db.query(models.Expense).all()
+one_item  = db.query(models.Expense).filter(models.Expense.id == 1).first()
+
+# 3. UPDATE
+one_item.amount = 175.0
+db.commit()
+db.refresh(one_item)
+
+# 4. DELETE
+db.delete(one_item)
+db.commit()
+```
+
+### Schema Migrations & Query Management
+* **The Problem with `create_all()`**: `Base.metadata.create_all()` only creates tables if they don't exist. It will **never** alter an existing table to add new columns.
+* **Alembic (Database Migrations)**:
+  * Acts like Git version control for your database structure.
+  * Tracks incremental revisions (`upgrade()` to apply, `downgrade()` to reverse).
+* **Production Query Management**:
+  * **Pagination**: `db.query(models.Expense).offset(0).limit(20).all()` (prevents loading millions of rows into server RAM).
+  * **Aggregations**: `from sqlalchemy import func; total = db.query(func.sum(models.Expense.amount)).scalar()` (computes math directly in the database C-engine).

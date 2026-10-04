@@ -70,11 +70,11 @@ flowchart TD
 ## 📌 Stage 4: Build Your First End-to-End App
 
 ### 🛠️ Project 4: Personal Expense Tracker — API + DB Version
-- [ ] Setup database configurations & connection in the application
-- [ ] Modify `POST /expenses` to store details in the database
-- [ ] Modify `GET /expenses` to fetch data from the database
-- [ ] Modify `GET /expenses/highest` to query data from the database
-- [ ] Schema migrations & ORM / SQL query management
+- [x] Setup database configurations & connection in the application
+- [x] Modify `POST /expenses` to store details in the database
+- [x] Modify `GET /expenses` to fetch data from the database
+- [x] Modify `GET /expenses/highest` to query data from the database
+- [x] Schema migrations & ORM / SQL query management
 
 ---
 
